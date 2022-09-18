@@ -1,7 +1,16 @@
 <template>
-
   <router-view/>
+  <FooterMusic/>
 </template>
+
+<script>
+import FooterMusic from '@/components/global/FooterMusic'
+export default {
+  comments:{
+    FooterMusic,
+  }
+}
+</script>
 
 <style lang="less">
 *{

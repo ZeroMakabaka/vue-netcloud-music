@@ -20,7 +20,7 @@
     <!-- 列表 -->
     <div class="playlist-content">
       <div class="plist-item" v-for="(song, index) in songs" :key="index">
-        <div class="plist-item-left">
+        <div class="plist-item-left" @click="playInList(index)">
           <span class="plist-xuhao">{{ index + 1 }}</span>
           <div class="plist-item-name">
             <p class="song-name">{{ song.name }}</p>
@@ -45,9 +45,17 @@
   </div>
 </template>
 <script>
+import { mapMutations } from 'vuex';
 export default {
   setup(props) {},
   props: ["songs"],
+  methods:{
+    ...mapMutations(['updatePlaylist','updatePlayingIndex']),
+    playInList(index){
+      this.updatePlaylist(this.songs)
+      this.updatePlayingIndex(index)
+    }
+  }
 };
 </script>
 <style lang="less" scoped>
@@ -82,6 +90,7 @@ export default {
     }
   }
   .playlist-content {
+    padding-bottom: 1.4rem;
     .plist-item {
       width: 100%;
       height: 1rem;
@@ -119,6 +128,7 @@ export default {
           }
         }
       }
+
       //   .plist-item-right {
       //   }
     }
