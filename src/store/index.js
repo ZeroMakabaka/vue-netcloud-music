@@ -1,4 +1,5 @@
 import { createStore } from 'vuex'
+import { getMusicLyric } from '@/axios/api/music';
 
 export default createStore({
   state: {
@@ -19,7 +20,11 @@ export default createStore({
     playingIndex: 0,
     // 播放标识
     isPlaying: false,
-    isSongDetail: false
+    isSongDetail: false,
+    lyrics:{},
+    // 当前时间
+    currentTime: 0,
+    duration: 0,
   },
   getters: {
   },
@@ -35,9 +40,22 @@ export default createStore({
     },
     updateIsSongDetail(state){
       state.isSongDetail = !state.isSongDetail
+    },
+    updateLyrics(state,value){
+      state.lyrics = value
+    },
+    updateCurrentTime(state,value){
+      state.currentTime = value
+    },
+    updateDuration(state,value){
+      state.duration = value
     }
   },
   actions: {
+    async getLyric(context,value){
+      let res = await getMusicLyric(value)
+      context.commit('updateLyrics',res.data.lrc)
+    }
   },
   modules: {
   }

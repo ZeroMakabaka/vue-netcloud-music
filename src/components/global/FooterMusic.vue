@@ -2,14 +2,16 @@
   <div class="footer-music">
     <div class="footer-music-left" @click="updateIsSongDetail">
       <img :src="playlist[playingIndex].al.picUrl" alt="" />
+    </div>
+    <div class="footer-music-content" @click="updateIsSongDetail">
       <span class="song-name">{{ playlist[playingIndex].name }}</span>
     </div>
     <div class="footer-music-right">
       <svg class="icon" aria-hidden="true" @click="play" v-show="!isPlaying">
-        <use xlink:href="#icon-bofang" ></use>
+        <use xlink:href="#icon-bofang"></use>
       </svg>
       <svg class="icon" aria-hidden="true" @click="play" v-show="isPlaying">
-        <use xlink:href="#icon-zanting" ></use>
+        <use xlink:href="#icon-zanting"></use>
       </svg>
       <svg class="icon" aria-hidden="true">
         <use xlink:href="#icon-danlieliebiao"></use>
@@ -19,48 +21,77 @@
       :src="`https://music.163.com/song/media/outer/url?id=${playlist[playingIndex].id}.mp3`"
       ref="audio"
     ></audio>
-    <van-popup v-model:show="isSongDetail" position="bottom" :style="{ height: '100%',width:'100%' }">
-
+    <!-- 歌曲详情播放页 -->
+    <van-popup
+      v-model:show="isSongDetail"
+      position="bottom"
+      :style="{ height: '100%', width: '100%' }"
+    >
+      <MusicDetail
+        :musiclist="playlist[playingIndex]"
+        :play="play"
+        :isPlaying="isPlaying"
+        :getDuration="getDuration"
+      />
     </van-popup>
-
   </div>
 </template>
 <script>
 import { mapMutations, mapState } from "vuex";
+import MusicDetail from "@/components/music/MusicDetail";
 export default {
   computed: {
-    ...mapState(["playlist", "playingIndex","isPlaying","isSongDetail"]),
+    ...mapState(["playlist", "playingIndex", "isPlaying", "isSongDetail","currentTime","duration"]),
   },
   mounted() {
     console.log(this.$refs);
+    this.getCurrentTime()
   },
   methods: {
     play() {
       if (this.$refs.audio.paused) {
         this.$refs.audio.play();
         this.updateIsPlaying(true);
-      }else {
-        this.$refs.audio.pause()
+
+      } else {
+        this.$refs.audio.pause();
         this.updateIsPlaying(false);
       }
     },
-    ...mapMutations(['updateIsPlaying','updateIsSongDetail'])
+    ...mapMutations(["updateIsPlaying", "updateIsSongDetail","updateCurrentTime","updateDuration"]),
+    getCurrentTime() {
+      this.$refs.audio.addEventListener("timeupdate", (e) => {
+          this.updateCurrentTime(this.$refs.audio.currentTime)
+          // console.log(this.currentTime);
+        },
+        false
+      );
+    },
+    getDuration(){
+     this.updateDuration(this.$refs.audio.duration)
+    }
   },
-  watch:{
-    playlist(){
+  updated() {
+    this.$store.dispatch("getLyric", this.playlist[this.playingIndex].id);
+    this.getDuration(this.$refs.audio.duration)
+  },
+  watch: {
+    playlist() {
       if (!this.isPlaying) {
-        this.$refs.audio.autoplay = true
-        this.updateIsPlaying(true)
+        this.$refs.audio.autoplay = true;
+        this.updateIsPlaying(true);
       }
     },
-    playingIndex(){
-      this.$refs.audio.autoplay = true
+    playingIndex() {
+      this.$refs.audio.autoplay = true;
       if (this.$refs.audio.paused) {
-        this.updateIsPlaying(true)
-        
+        this.updateIsPlaying(true);
       }
-    }
-  }
+    },
+  },
+  components: {
+    MusicDetail,
+  },
 };
 </script>
 <style lang="less" scoped>
@@ -76,7 +107,7 @@ export default {
   justify-content: space-between;
   padding: 0.2rem;
   .footer-music-left {
-    width: 70%;
+    width: 15%;
     height: 100%;
     display: flex;
     align-items: center;
@@ -85,6 +116,17 @@ export default {
       width: 1rem;
       height: 1rem;
       border-radius: 100%;
+    }
+  }
+  .footer-music-content {
+    padding: 0 10px;
+    display: flex;
+    justify-content: flex-start;
+    width: 65%;
+    .song-name {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
   }
   .footer-music-right {
