@@ -14,7 +14,7 @@
     </div>
 
     <div class="top-nav-right">
-      <svg class="icon" aria-hidden="true">
+      <svg class="icon" aria-hidden="true" @click="$router.push({name:'Search'})">
         <use xlink:href="#icon-sousuo"></use>
       </svg>
     </div>

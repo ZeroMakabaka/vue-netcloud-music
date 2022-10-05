@@ -25,6 +25,10 @@ export default createStore({
     // 当前时间
     currentTime: 0,
     duration: 0,
+    // 历史记录
+    historyList:JSON.parse(sessionStorage.getItem('historyList')) || [],
+    // 关键词
+    suggestVal: ""
   },
   getters: {
   },
@@ -34,6 +38,13 @@ export default createStore({
     },
     updatePlaylist(state,value){
       state.playlist = value
+    },
+    // 搜索点击之后的歌曲加入播放列表中
+    addASong(state,value){
+      state.playlist.push(value)
+    },
+    updateSuggestVal(state,value){
+      state.suggestVal = value
     },
     updatePlayingIndex(state,value){
       state.playingIndex = value
@@ -49,6 +60,30 @@ export default createStore({
     },
     updateDuration(state,value){
       state.duration = value
+    },
+    updateHistoryList(state,value){
+
+      // state.historyList = value;
+    
+      // sessionStorage.setItem("historyList", JSON.stringify(state.historyList));
+      if (value.trim()) {
+        // debugger
+        // this.$emit("input", this.searchVal);
+        state.historyList.unshift(value);
+        // 去重
+      
+        state.historyList = [...new Set(state.historyList)];
+        // 限制长度
+        if (state.historyList.length > 10) {
+          state.historyList.pop();
+        }
+
+        sessionStorage.setItem("historyList", JSON.stringify(state.historyList));
+      }
+    },
+    clearHistoryList(state){
+      state.historyList = [];
+      sessionStorage.setItem("historyList", '[]');
     }
   },
   actions: {
