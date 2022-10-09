@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
+import store from '@/store/index'
 import MusicListView from '@/views/MusicListView'
 
 const routes = [
@@ -28,12 +29,43 @@ const routes = [
     path: '/search',
     name: 'Search',
     component: () => import(/* webpackChunkName: "Search" */ '../views/SearchView.vue')
+  },
+  {
+    path: '/vedio',
+    name: 'Vedio',
+    component: () => import(/* webpackChunkName: "Login" */ '../views/VedioView.vue')
+  },
+  {
+    path: '/login',
+    name: 'Login',
+    component: () => import(/* webpackChunkName: "Login" */ '../views/Login.vue')
+  },
+  {
+    path: '/userinfo',
+    name: 'UserInfo',
+    beforeEnter: (to, from, next) => {
+      if (store.state.isLogin || store.state.token || localStorage.getItem('token')) {
+        next()
+      }else{
+        next('/login')
+      }
+      // ...
+    },
+    component: () => import(/* webpackChunkName: "UserInfo" */ '../views/UserInfo.vue')
   }
 ]
 
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes
+})
+
+router.beforeEach((to,from)=>{
+  if (to.path=='/login') {
+    store.state.isShowFooter = false
+  }else{
+    store.state.isShowFooter = true
+  }
 })
 
 export default router

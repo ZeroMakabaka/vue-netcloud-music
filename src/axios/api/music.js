@@ -23,3 +23,4 @@ export function getMusicLyric(id){
         url: `/lyric?id=${id}`
     })
 }
+

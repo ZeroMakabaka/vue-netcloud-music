@@ -1,9 +1,10 @@
 <template>
   <router-view/>
-  <FooterMusic/>
+  <FooterMusic v-show="$store.state.isShowFooter"/>
 </template>
 
 <script>
+import 'vant/es/toast/style';
 import FooterMusic from '@/components/global/FooterMusic'
 export default {
   comments:{

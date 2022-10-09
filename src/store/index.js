@@ -1,5 +1,6 @@
 import { createStore } from 'vuex'
 import { getMusicLyric } from '@/axios/api/music';
+import { loginByPhone } from '@/axios/api/home';
 
 export default createStore({
   state: {
@@ -28,11 +29,17 @@ export default createStore({
     // 历史记录
     historyList:JSON.parse(sessionStorage.getItem('historyList')) || [],
     // 关键词
-    suggestVal: ""
+    suggestVal: "",
+    isLogin:false,
+    isShowFooter:true,
+    token:''
   },
   getters: {
   },
   mutations: {
+    updateIsLogin(state,value){
+      state.isLogin = value
+    },
     updateIsPlaying(state,value){
       state.isPlaying = value;
     },
@@ -84,12 +91,21 @@ export default createStore({
     clearHistoryList(state){
       state.historyList = [];
       sessionStorage.setItem("historyList", '[]');
+    },
+    updateToken(state,value){
+      state.token = value;
+      localStorage.setItem('token',state.token)
     }
   },
   actions: {
     async getLyric(context,value){
       let res = await getMusicLyric(value)
       context.commit('updateLyrics',res.data.lrc)
+    },
+    async getLoginByPhone(context,value){
+      let res = await loginByPhone(value)
+      console.log(res);
+      return res;
     }
   },
   modules: {

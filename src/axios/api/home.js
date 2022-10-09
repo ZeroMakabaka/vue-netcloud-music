@@ -1,5 +1,39 @@
 import service from "..";
-
+//手机登录
+export function loginByPhone(data){
+    return service({
+        method: 'POST',
+        url: `/login/cellphone?phone=${data.phone}&password=${data.password}`
+    })
+}
+// 发送验证码
+export function sendCaptcha(data){
+    return service({
+        method: 'GET',
+        url: `/captcha/sent?phone=${data}`
+    })
+}
+// 验证验证码 
+export function verifyCaptcha(data){
+    return service({
+        method: 'GET',
+        url: `/captcha/verify?phone=${data.phone}&captcha=${data.captcha}`
+    })
+}
+// 获取用户信息
+export function getUserDetail(data){
+    return service({
+        method: 'GET',
+        url: `/user/detail?uid=${data}`
+    })
+}
+// 获取用户信息
+export function getLoginStatus(){
+    return service({
+        method: 'GET',
+        url: `/login/status`
+    })
+}
 // 获取轮播图数据
 export function getSwiper(){
     return service({
