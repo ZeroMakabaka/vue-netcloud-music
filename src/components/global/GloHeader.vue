@@ -29,9 +29,9 @@ import { defineComponent, ref } from "@vue/runtime-core";
 export default defineComponent({
     props:['bgColor','iconColor'],
     setup(props,{slots}) {
-        if (bgColor) {
+        // if (bgColor) {
             
-        }   
+        // }   
     }
 })
 </script>

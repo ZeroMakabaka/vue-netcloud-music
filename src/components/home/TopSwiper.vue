@@ -33,12 +33,7 @@ export default {
     });
     return { state };
   },
-  data() {
-    return {};
-  },
-  components: {},
-  methods: {},
-  mounted() {},
+
 };
 </script>
 
