@@ -6,6 +6,13 @@ export function loginByPhone(data){
         url: `/login/cellphone?phone=${data.phone}&password=${data.password}`
     })
 }
+// 登出
+export function loginOut(){
+    return service({
+        method: 'GET',
+        url: `logout`
+    })    
+}
 // 发送验证码
 export function sendCaptcha(data){
     return service({

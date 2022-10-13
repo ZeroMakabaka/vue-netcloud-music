@@ -1,37 +1,50 @@
 <template>
   <div class="top-nav">
     <div class="top-nav-left">
-      <svg class="icon" aria-hidden="true">
-        <use xlink:href="#icon-bofangliebiao"></use>
+      <svg class="icon" aria-hidden="true" @click="state.isShowSetting=true">
+        <use xlink:href="#icon-danlieliebiao"></use>
       </svg>
     </div>
 
     <div class="top-nav-menu">
       <span @click="$router.push('/userinfo')">我的</span>
-      <span class="active">发现</span>
+      <span >发现</span>
       <span >云村</span>
       <span  @click="$router.push('/vedio')">视频</span>
     </div>
 
     <div class="top-nav-right">
       <svg class="icon" aria-hidden="true" @click="$router.push({name:'Search'})">
-        <use xlink:href="#icon-sousuo"></use>
+        <use xlink:href="#icon-sousuo1"></use>
       </svg>
     </div>
+
+    <van-popup v-model:show="state.isShowSetting" position="left" :style="{ height:'100%',width: '80%' }" >
+        <UserSetting/>
+    </van-popup>
+
     
   </div>
 
 </template>
 
 <script>
+import { reactive } from 'vue'
+import UserSetting from '@/components/user/UserSetting'
 export default {
   name: "TopNav",
-  data() {
-    return {};
+  components:{
+    UserSetting
   },
-  components: {},
-  methods: {},
-  mounted() {},
+  setup(props) {
+    const state = reactive({
+      isShowSetting: false
+    })
+
+    return {
+      state
+    }
+  }
 };
 </script>
 

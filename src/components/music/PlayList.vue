@@ -45,17 +45,28 @@
   </div>
 </template>
 <script>
-import { mapMutations } from 'vuex';
+import { mapMutations, useStore } from 'vuex';
 export default {
-  setup(props) {},
-  props: ["songs"],
-  methods:{
-    ...mapMutations(['updatePlaylist','updatePlayingIndex']),
-    playInList(index){
-      this.updatePlaylist(this.songs)
-      this.updatePlayingIndex(index)
+  setup(props) {
+    const store = useStore();
+
+    function playInList(index){
+      store.commit('m_music/updatePlaylist',props.songs);
+      store.commit('m_music/updatePlayingIndex',index);
     }
-  }
+
+    return {
+      playInList
+    }
+  },
+  props: ["songs"],
+  // methods:{
+  //   ...mapMutations(['updatePlaylist','updatePlayingIndex']),
+  //   playInList(index){
+  //     this.updatePlaylist(this.songs)
+  //     this.updatePlayingIndex(index)
+  //   }
+  // }
 };
 </script>
 <style lang="less" scoped>

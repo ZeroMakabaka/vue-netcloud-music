@@ -1,0 +1,59 @@
+
+{
+    "menuList": [
+        {
+            "menus": [
+                {
+                    "icon": "#icon-xiaoxi1",
+                    "title": "我的消息"
+                },
+                {
+                    "icon": "#icon-dengpao",
+                    "title": "创作者中心"
+                },
+                {
+                    "icon": "#icon-jifen",
+                    "title": "签到"
+                }
+            ] 
+        },
+        {
+            "title": "音乐服务",
+            "menus": [
+                {
+                    "icon": "#icon-dingdan",
+                    "title": "我的订单"
+                },
+                {
+                    "icon": "#icon-kefu",
+                    "title": "我的客服"
+                },
+                {
+                    "icon": "#icon-about",
+                    "title": "关于"
+                }
+            ]
+        },
+        {
+            "title" : "其他",
+            "menus": [
+                {
+                    "icon": "#icon-shezhi1",
+                    "title": "设置"
+                },
+                {
+                    "icon": "#icon-yejian",
+                    "title": "深色模式"
+                },
+                {
+                    "icon": "#icon-dingshi",
+                    "title": "定时关闭"
+                },
+                {
+                    "icon": "#icon-yifu",
+                    "title": "个性装扮"
+                }
+            ]
+        }
+    ]
+}

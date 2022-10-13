@@ -35,13 +35,6 @@ export default defineComponent({
     console.log(props);
 
     const play = (song) => {
-
-      // debugger
-      // if (!song.al) {
-      //         console.log("执行子组件", song);
-      //   song.al = song.album;
-      //   song.al.picUrl = song.album.artist.img1v1Url;
-      // }
       context.emit("playing", song);
       // playInList(song);
     };

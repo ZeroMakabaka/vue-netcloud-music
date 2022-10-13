@@ -23,4 +23,11 @@ export function getMusicLyric(id){
         url: `/lyric?id=${id}`
     })
 }
+// 获取用户歌单
+export function getUserMusicList(uid){
+    return service({
+        method: 'GET',
+        url: `/user/playlist?uid=${uid}`
+    })
+}
 

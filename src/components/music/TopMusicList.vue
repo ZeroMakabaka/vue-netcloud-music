@@ -191,12 +191,13 @@ export default {
     border-radius: 0.5rem;
     background-color: gray;
     .list-bottom-nav {
-      width: 25%;
+      // width: 25%;
       display: flex;
       justify-content: center;
       align-items: center;
       color: white;
       font-size: 0.32rem;
+      flex: 1;
       border-right: solid 1px rgb(203, 200, 200);
       &:last-child {
         border-right: none;

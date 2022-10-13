@@ -35,7 +35,7 @@ export default {
     });
     const store = useStore();
     let historyList = computed(() => {
-      return store.state.historyList;
+      return store.state.m_music.historyList;
     });
 
     onMounted(async () => {
@@ -52,7 +52,7 @@ export default {
         let res = await getSearchResult(state.searchVal);
         console.log(res);
         state.searchList = res.data.result.songs;
-        store.commit("updateHistoryList", state.searchVal);
+        store.commit("m_music/updateHistoryList", state.searchVal);
         search(state.searchVal);
         // this.$emit('searchVal',this.searchVal);
         emit("searchVal", state.searchVal);

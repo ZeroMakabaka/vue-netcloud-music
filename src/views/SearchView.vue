@@ -84,14 +84,14 @@ export default {
     onMounted(() => {
       async () => {
         // 获取搜索历史
-        state.historyList = store.state.historyList;
+        state.historyList = store.state.m_music.historyList;
         // state.historyList = sessionStorage.getItem("historyList", JSON.stringify(state.historyList));
         console.log(state.historyList);
       };
     });
 
     let historyList = computed(() => {
-      return store.state.historyList;
+      return store.state.m_music.historyList;
     });
     // 获取搜索建议
     async function getSuggList(val) {
@@ -113,7 +113,7 @@ export default {
     //清空方法
     function clearHistory() {
       state.historyList = [];
-      store.commit("clearHistoryList", store);
+      store.commit("m_music/clearHistoryList", store);
       //
       state.searchList = [];
     }
@@ -126,14 +126,14 @@ export default {
     function getSearchList(val) {
       // state.searchList = val;
       console.log("结果：", val);
-state.isShowSuggest = false
-state.isShowHistory = false
+      state.isShowSuggest = false
+      state.isShowHistory = false
       search(val);
     }
 
     function addSearchSong(song) {
-      store.commit("addASong", song);
-      store.commit("updatePlayingIndex", store.state.playlist.length - 1);
+      store.commit("m_music/addASong", song);
+      store.commit("m_music/updatePlayingIndex", store.state.m_music.playlist.length - 1);
     }
 
     return {

@@ -1,6 +1,8 @@
 <template>
     <div>
+        <Loading v-show="isLoading"/>
         <TopMusicList :playlist="state.playlist"/>
+        
         <PlayList :songs="state.songs"/>
     </div>
 </template>
@@ -11,6 +13,7 @@ import { onMounted, reactive } from 'vue'
 import { getMusicListDetail,getMusicList } from "@/axios/api/music";
 import TopMusicList from '@/components/music/TopMusicList'
 import PlayList from '@/components/music/PlayList'
+import { useState } from '@/utils/useState';
 export default {
     setup() {
         const $router = useRoute();
@@ -18,6 +21,8 @@ export default {
             playlist: {},
             songs: []
         })
+
+        const appStore = useState('m_app',['isLoading'])
         onMounted(async() => {
             let id = $router.query.id;
             console.log(id)
@@ -31,12 +36,12 @@ export default {
             console.log(result);
             state.songs = result.data.songs
             // 页面渲染时，子组件数据还没有拿到
-            sessionStorage.setItem('playlistDetail',JSON.stringify(state))
-            
-            
+            sessionStorage.setItem('playlistDetail',JSON.stringify(state));      
 
         })
-        return {state}
+        return {state,
+            ...appStore
+        }
     },
     components: {
         TopMusicList,

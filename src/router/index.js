@@ -44,13 +44,16 @@ const routes = [
     path: '/userinfo',
     name: 'UserInfo',
     beforeEnter: (to, from, next) => {
-      if (store.state.isLogin || store.state.token || localStorage.getItem('token')) {
+      if (store.state.m_user.isLogin || store.state.m_user.token!==' ' || localStorage.getItem('token')) {
+        console.log('已登录');
         next()
       }else{
+        console.log('未登录');
         next('/login')
       }
       // ...
     },
+    
     component: () => import(/* webpackChunkName: "UserInfo" */ '../views/UserInfo.vue')
   }
 ]
@@ -62,9 +65,9 @@ const router = createRouter({
 
 router.beforeEach((to,from)=>{
   if (to.path=='/login') {
-    store.state.isShowFooter = false
+    store.state.m_music.isShowFooter = false
   }else{
-    store.state.isShowFooter = true
+    store.state.m_music.isShowFooter = true
   }
 })
 

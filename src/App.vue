@@ -1,14 +1,25 @@
 <template>
+    
   <router-view/>
-  <FooterMusic v-show="$store.state.isShowFooter"/>
+  <FooterMusic v-show="$store.state.m_music.isShowFooter"/>
 </template>
 
 <script>
 import 'vant/es/toast/style';
+import 'vant/es/dialog/style';
+import Loading from '@/components/global/Loading'
 import FooterMusic from '@/components/global/FooterMusic'
+import {useState} from '@/utils/useState'
 export default {
   comments:{
     FooterMusic,
+    Loading
+  },
+  setup(props) {
+    const appStore = useState('m_app',['isLoading']);
+    return {
+      ...appStore
+    }
   }
 }
 </script>

@@ -9,38 +9,9 @@
     <div class="l-pop-content">
       <div class="l-pop-content-top">
         <p class="l-pop-top-title">请输入密码</p>
-        <!-- <p class="l-pop-top-title2">已发送至+86 {{ formatPhone(phone,3,'****') }}</p> -->
+        <p class="l-pop-top-title2">当前账号： {{ state.phone }}</p>
       </div>
-      <!-- 
-      <div class="l-pop-footer">
-        <van-form @submit="onSubmit" class="form">
-          <div class="l-pop-content-phone">
-            <van-cell-group inset class="l-pop-input-box">
-              <van-field
-                v-model="state.captcha"
-                placeholder="请输入密码"
-                label-width=".8rem"
-                class="l-pop-input"
-                size="large"
-                type="number"
-                maxlength="4"
-                name="phone"
-                clearable
-              >
-                <template #button>
-                  <van-button color="#c20c0c" type="primary"
-                    >重新发送</van-button
-                  >
-                </template>
-              </van-field>
-            </van-cell-group>
-          </div>
-          <van-button color="#c20c0c" round size="large" native-type="submit"
-            >下一步</van-button
-          >
-        </van-form>
-        <p class="l-pop-footer-desc">找回账号</p>
-      </div> -->
+     
       <div class="l-pop-footer">
         <van-form @submit="onSubmit" class="form">
           <div class="l-pop-content-phone">
@@ -71,12 +42,14 @@ import { reactive } from "vue";
 import { getUserDetail} from "@/axios/api/home";
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
+import {replaceStar} from '@/utils/index'
 export default {
   emits: ["isConfirm"],
   props: ["phone"],
   setup(props, { emit }) {
     const state = reactive({
       password: "",
+      phone: replaceStar(props.phone)
     });
     const store = useStore();
     const router = useRouter();
@@ -89,12 +62,13 @@ export default {
       };
       // console.log(formData);
       // let res = await loginByPhone(formData)
-      let res = await store.dispatch('getLoginByPhone',formData);
+      let res = await store.dispatch('m_user/getLoginByPhone',formData);
       console.log(res);
       if (res.data.code===200) {
-        store.commit('updateIsLogin',true);
-        store.commit('updateToken',res.data.token);
+        store.commit('m_user/updateIsLogin',true);
+        store.commit('m_user/updateToken',res.data.token);
         let result = await getUserDetail(res.data.account.id);
+        store.commit('m_user/updateUserInfo',result.data.profile);
         console.log(result);
         router.push('/userinfo')
       }else if (res.data.code===502){

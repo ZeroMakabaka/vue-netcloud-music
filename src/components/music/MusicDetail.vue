@@ -1,9 +1,10 @@
 <template>
   <div class="music-detail">
-    <img class="music-detail-bg" :src="musiclist.al.picUrl" alt="" srcset="" />
+    <!-- <img class="music-detail-bg" :src="musiclist.al.picUrl" alt="" srcset="" /> -->
+    <div class="music-detail-bg"></div>
     <div class="detail-header">
       <div class="detail-header-left" @click="updateIsSongDetail">
-        <svg class="icon" aria-hidden="true" >
+        <svg class="icon" aria-hidden="true">
           <use xlink:href="#icon-zuojiantou"></use>
         </svg>
       </div>
@@ -27,7 +28,11 @@
       </div>
     </div>
     <!-- 中间 -->
-    <div class="music-detail-content" v-show="!isShowLyric" @click="isShowLyric=true">
+    <div
+      class="music-detail-content"
+      v-show="!isShowLyric"
+      @click="isShowLyric = true"
+    >
       <div class="m-song-disc">
         <img
           src="@/assets/needle-ab.png"
@@ -45,7 +50,12 @@
         <!-- <img :src="musiclist.al.picUrl" alt="" class="m-song-cover" :class="{'cover-active':isPlaying,'cover-pause':!isPlaying}"/> -->
       </div>
     </div>
-    <div class="music-detail-content-lyric" ref="lyricScroll" v-show="isShowLyric" @click="isShowLyric=false">
+    <div
+      class="music-detail-content-lyric"
+      ref="lyricScroll"
+      v-show="isShowLyric"
+      @click="isShowLyric = false"
+    >
       <p
         v-for="item in lyric"
         :key="item"
@@ -76,7 +86,11 @@
         </svg>
       </div>
       <div class="m-footer-content">
-        <van-progress :show-pivot="false"  :percentage="position" class="m-footer-progress"/>
+        <van-progress
+          :show-pivot="false"
+          :percentage="position"
+          class="m-footer-progress"
+        />
       </div>
       <div class="m-footer-bottom">
         <svg class="icon" aria-hidden="true">
@@ -105,99 +119,163 @@
 <script>
 import { Vue3Marquee } from "vue3-marquee";
 import "vue3-marquee/dist/style.css";
-import { mapMutations, mapState } from "vuex";
+import { mapMutations, mapState, useStore } from "vuex";
+import { useState } from "@/utils/useState";
+import { reactive, ref, computed, watch, onMounted } from "vue";
+import { formatLyric } from "@/utils";
+import { useActions } from "@/utils/useActions";
+import { useMutations } from "@/utils/useMutations";
+import store from "@/store";
 export default {
-  props: ["musiclist", "isPlaying", "play","getDuration"],
-  data() {
-    return {
+  props: ["musiclist", "isPlaying", "play", "getDuration"],
+  setup({ musiclist, isPlaying, play, getDuration }) {
+    const store = useStore();
+    const state = reactive({
       isShowMarquee: false,
       isShowLyric: false,
-      position:0,
+      position: 0,
+      currentTime: computed(()=>{
+        return store.state.m_music.currentTime
+      }),
+    });
+
+    const storeSate = useState("m_music", [
+      "lyrics",
+      "currentTime",
+      "playingIndex",
+      "duration",
+    ]);
+    console.log("storeSate", storeSate);
+
+    const storeAction = useMutations("m_music", [
+      "updateIsSongDetail",
+      "updateIsPlaying",
+      "updatePlayingIndex",
+    ]);
+
+    const lyricScroll = ref(null);
+    const content = ref(null);
+
+    let lyric = computed(() => {
+      return formatLyric(store.state.m_music.lyrics);
+    });
+
+    let position = computed(() => {
+      return (store.state.m_music.currentTime / store.state.m_music.duration) * 100
+      
+    });
+
+    function goPlay(num) {
+      let index = store.state.m_music.playingIndex + num;
+      if (index < 0) {
+        index = musiclist.length - 1;
+      } else if (index == musiclist.length) {
+        index = 0;
+      }
+      store.commit("m_music/updatePlayingIndex", index);
+      store.commit('m_music/updateCurrentTime',0)
+      // store.state.m_music.currentTime = 0;
+    }
+
+    onMounted(() => {
+      getDuration();
+      console.log("总时长", store.state.m_music.duration);
+      console.log(musiclist);
+
+      // 判断p是否溢出
+      let p = content.value;
+      console.log(content);
+      console.log(p);
+      if (p.clientWidth > 200) {
+        state.isShowMarquee = true;
+      }
+    });
+
+    watch(
+      () => state.currentTime,
+      (newVal) => {
+        let p = document.querySelector("p.lrc-active");
+        // console.log([p]);
+        // console.log([this.$refs.lyricScroll]);
+        if (p && p.offsetTop > 250) {
+          lyricScroll.value.scrollTop = p.offsetTop - 250;
+        }
+        if (newVal == store.state.m_music.duration) {
+          // this.updatePlayingIndex(this.playingIndex+1)
+          // if (this.playingIndex===this.musiclist.length-1) {
+
+          // }
+          goPlay(1);
+        }
+      }
+    );
+
+    return {
+      ...state,
+      ...storeSate,
+      ...storeAction,
+      lyric,
+      position,
+      lyricScroll,
+      content,
+      goPlay,
     };
   },
-  computed: {
-    ...mapState(["lyrics", "currentTime","playingIndex","duration"]),
-    lyric() {
-      let arr;
-      if (this.lyrics.lyric) {
-        // [00:00.000] xxxxx
-        arr = this.lyrics.lyric.split(/[(\r\n)\r\n]+/).map((item, i) => {
-          // let min = item.slice(1,3);
-          // let sec = item.slice(4,6);
-          // let mill = item.slice(7,10);
-          // let lrc = item.slice(11,item.length)
-          let min = item.slice(item.indexOf("[") + 1, item.indexOf(":"));
-          let sec = item.slice(item.indexOf(":") + 1, item.indexOf("."));
-          let mill = item.slice(item.indexOf(".") + 1, item.indexOf("]"));
-          let lrc = item.slice(item.indexOf("]") + 1, item.length);
-          let time = parseInt(min) * 60 + parseInt(sec) + parseInt(mill) / 1000;
-          // console.log(min,sec,Number(mill),lrc);
-          return { min, sec, mill, time, lrc };
-        });
-
-        arr.forEach((item, i) => {
-          if (i === arr.length - 1 || isNaN(arr[i+1].time)) {
-            item.pre = 100000;
-          } else {
-            item.pre = arr[i + 1].time;
-          }
-        });
-      }
-      console.log(arr);
-      return arr;
-    },
-    position(){
-      return (this.currentTime/this.duration) * 100
-    }
+  data() {
+    // return {
+    //   isShowMarquee: false,
+    //   isShowLyric: false,
+    //   position: 0,
+    // };
   },
+
   mounted() {
-    this.getDuration()
-    console.log(this.duration);
-    console.log(this.musiclist);
-    // 判断p是否溢出
-    let p = this.$refs.content;
-    console.log([p]);
-    console.log(p.offsetWidth);
-    if (p.clientWidth > 200) {
-      this.isShowMarquee = true;
-    }
-    // console.log(p.scrollWidth);
-    // console.log(this.isShowMarquee);
-    // console.log(this.currentTime);
+    // this.getDuration();
+    // console.log(this.duration);
+    // console.log(this.musiclist);
+    // // 判断p是否溢出
+    // let p = this.$refs.content;
+    // console.log([p]);
+    // console.log(p.offsetWidth);
+    // if (p.clientWidth > 200) {
+    //   this.isShowMarquee = true;
+    // }
   },
   components: {
     Vue3Marquee,
   },
   methods: {
-    ...mapMutations(["updateIsSongDetail", "updateIsPlaying","updatePlayingIndex"]),
-    goPlay(num){
-      let index = this.playingIndex + num;
-      if (index<0) {
-        index = this.musiclist.length - 1
-      }else if (index == this.musiclist.length){
-        index = 0
-      }
-      this.updatePlayingIndex(index);
-      this.currentTime = 0;
-    }
- 
+    // ...mapMutations([
+    //   "updateIsSongDetail",
+    //   "updateIsPlaying",
+    //   "updatePlayingIndex",
+    // ]),
+    // goPlay(num) {
+    //   let index = this.playingIndex + num;
+    //   if (index < 0) {
+    //     index = this.musiclist.length - 1;
+    //   } else if (index == this.musiclist.length) {
+    //     index = 0;
+    //   }
+    //   this.updatePlayingIndex(index);
+    //   this.currentTime = 0;
+    // },
   },
   watch: {
-    currentTime(newVal) {
-      let p = document.querySelector("p.lrc-active");
-      // console.log([p]);
-      // console.log([this.$refs.lyricScroll]);
-      if (p && p.offsetTop > 250) {
-        this.$refs.lyricScroll.scrollTop = p.offsetTop - 250;
-      }
-      if (newVal == this.duration) {
-        // this.updatePlayingIndex(this.playingIndex+1)
-        // if (this.playingIndex===this.musiclist.length-1) {
-          
-        // }
-        this.goPlay(1)
-      }
-    },
+    // currentTime(newVal) {
+    //   let p = document.querySelector("p.lrc-active");
+    //   // console.log([p]);
+    //   // console.log([this.$refs.lyricScroll]);
+    //   if (p && p.offsetTop > 250) {
+    //     this.$refs.lyricScroll.scrollTop = p.offsetTop - 250;
+    //   }
+    //   if (newVal == this.duration) {
+    //     // this.updatePlayingIndex(this.playingIndex+1)
+    //     // if (this.playingIndex===this.musiclist.length-1) {
+    //     // }
+    //     this.goPlay(1);
+    //   }
+    // },
   },
 };
 </script>
@@ -208,6 +286,7 @@ export default {
     width: 100%;
     height: 100%;
     position: absolute;
+    background: #6e6d6d;
     z-index: -1;
     filter: blur(70px);
   }
@@ -308,7 +387,7 @@ export default {
   }
   .music-detail-content-lyric {
     position: absolute;
-    
+
     width: 100%;
     height: 8.5rem;
     display: flex;
@@ -317,15 +396,15 @@ export default {
     margin-top: 0.2rem;
     overflow: auto;
     // overflow-y: scroll;
-    top:1rem;
+    top: 1rem;
 
     .m-content-lyric-lrc {
-      color: rgb(232, 230, 230);
+      color: rgb(198, 194, 194);
       margin-bottom: 0.4rem;
     }
     .lrc-active {
       color: rgb(255, 255, 255);
-      font-size: 0.5rem;
+      font-size: .4rem;
     }
   }
   .music-detail-footer {
@@ -351,9 +430,8 @@ export default {
       height: 0.4rem;
       display: flex;
       align-items: center;
-      .m-footer-progress{
+      .m-footer-progress {
         width: 100%;
-
       }
     }
     .m-footer-bottom {
